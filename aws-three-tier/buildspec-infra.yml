@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      # Install Terraform
+      - echo Installing Terraform...
+      - yum install -y yum-utils
+      - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+      - yum -y install terraform
+  pre_build:
+    commands:
+      - echo Logging into AWS...
+      - cd environments/dev
+      - echo Initializing Terraform...
+      - terraform init
+  build:
+    commands:
+      - echo Running Terraform Plan...
+      - terraform plan -out=tfplan
+      - echo Running Terraform Apply...
+      - terraform apply -auto-approve tfplan

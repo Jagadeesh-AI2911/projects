@@ -1,0 +1,14 @@
+# Ignore Terraform binary folders (where the huge file lives)
+**/.terraform/*
+**/.terraform/
+
+# Ignore state files (Sensitive)
+*.tfstate
+*.tfstate.*
+
+# Ignore secrets
+*.tfvars
+*.tfvars.json
+
+# Mac system files
+.DS_Store
