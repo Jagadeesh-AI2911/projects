@@ -75,7 +75,7 @@ resource "aws_ecs_cluster" "main" {
 resource "aws_ecs_task_definition" "app" {
     family                  = "${var.app_name}-${var.environment}-task"
     execution_role_arn      = aws_iam_role.ecs_execution_role.arn
-    task_role_arn           = aws_iam_role.ecs_task_role
+    task_role_arn           = aws_iam_role.ecs_task_role.arn
     network_mode            = "awsvpc"
     cpu                     = var.fargate_cpu
     memory                  = var.fargate_memory

@@ -67,7 +67,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 }
 resource "aws_s3_bucket_policy" "allow_cloudfront" {
-    bucket = "aws_s3_bucket.static.id"
+    bucket = aws_s3_bucket.static.id
     policy = jsonencode ({
         Version     = "2012-10-17"
         Statement   = [
@@ -87,4 +87,8 @@ resource "aws_s3_bucket_policy" "allow_cloudfront" {
             }
         ]
     })
+    depends_on = [
+      aws_s3_bucket.static,
+      aws_s3_bucket_public_access_block.block
+    ]
 }

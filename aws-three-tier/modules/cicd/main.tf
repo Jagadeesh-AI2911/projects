@@ -27,7 +27,7 @@ resource "aws_codebuild_project" "docker_build" {
     environment {
         compute_type    = "BUILD_GENERAL1_SMALL"
         image           = var.build_image_version
-        type            = var.codebuild_environment
+        type            = "LINUX_CONTAINER"
         privileged_mode = true
 
         environment_variable {
@@ -54,7 +54,7 @@ resource "aws_codebuild_project" "docker_build" {
 
     source {
         type        = "CODEPIPELINE"
-        buildspec   = "buildspec.yml"
+        buildspec   = "aws-three-tier/buildspec.yml"
     }
 }
 
@@ -161,6 +161,7 @@ resource "aws_codebuild_project" "infra_deploy" {
             name        = "TF_VAR_container_name"
             value       = var.container_name
         }
+
         environment_variable {
             name        = "TF_VAR_db_password"
             value       = "TemporaryPassword!" 
@@ -169,7 +170,7 @@ resource "aws_codebuild_project" "infra_deploy" {
 
     source {
         type        = "CODEPIPELINE"
-        buildspec   = "buildspec_infra.yml"
+        buildspec   = "aws-three-tier/buildspec_infra.yml"
     }
 }
 

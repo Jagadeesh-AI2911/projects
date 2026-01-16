@@ -11,7 +11,7 @@ phases:
   pre_build:
     commands:
       - echo Logging into AWS...
-      - cd environments/dev
+      - cd aws-three-tier/environments/dev
       - echo Initializing Terraform...
       - terraform init
   build:

@@ -38,7 +38,7 @@ resource "aws_security_group" "rds_sg" {
 resource "aws_db_instance" "mysql" {
     identifier              = "${var.environment}-mysqldb"
     engine                  = "mysql"
-    engine_version          = 8.0
+    engine_version          = "8.0"
     instance_class          = var.db_instance_class
     db_name                 = "myappdb"
     username                = "admin"
