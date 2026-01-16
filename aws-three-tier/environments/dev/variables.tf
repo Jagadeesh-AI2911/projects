@@ -64,3 +64,18 @@ variable "app_image_tag" {
     type        = string
     default     = "latest"
 }
+
+variable "github_repo_owner" {
+    description = "GitHub username"
+    type        = string
+}
+
+variable "github_repo_name" {
+  description = "GitHub Repository Name"
+  type        = string
+}
+
+variable "github_branch" {
+  description = "Branch to trigger off"
+  type        = string
+}
