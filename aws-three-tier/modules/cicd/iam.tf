@@ -20,9 +20,6 @@ resource "aws_iam_role_policy" "codebuild_policy" {
             {
                 Effect  = "Allow"
                 Action  = [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents",
                     "ecr:GetAuthorizationToken",
                     "ecr:BatchCheckLayerAvailability",
                     "ecr:GetDownloadUrlForLayer",
@@ -41,6 +38,20 @@ resource "aws_iam_role_policy" "codebuild_policy" {
                 var.ecr_nginx_arn
             ]
             },
+            {
+                Action = [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                ]
+                Effect = "Allow"
+                Resource = [
+                    "arn:aws:logs:*:*:log-group:/aws/codebuild/${aws_codebuild_project.docker_build.name}",
+                    "arn:aws:logs:*:*:log-group:/aws/codebuild/${aws_codebuild_project.docker_build.name}:*",
+                    "arn:aws:logs:*:*:log-group:/aws/codebuild/${aws_codebuild_project.infra_deploy.name}",
+                    "arn:aws:logs:*:*:log-group:/aws/codebuild/${aws_codebuild_project.infra_deploy.name}:*"
+                ]
+            }, 
             {
                 Action = ["ecr:GetAuthorizationToken"]
                 Effect = "Allow"
@@ -155,7 +166,10 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
             {
                 Effect = "Allow"
                 Action = [
-                    "logs:GetLogEvents"
+                    "logs:GetLogEvents",
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
                 ]
                 Resource = "*"
             },

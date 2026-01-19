@@ -170,7 +170,7 @@ resource "aws_codebuild_project" "infra_deploy" {
 
     source {
         type        = "CODEPIPELINE"
-        buildspec   = "aws-three-tier/buildspec_infra.yml"
+        buildspec   = "aws-three-tier/buildspec-infra.yml"
     }
 }
 

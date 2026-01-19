@@ -12,6 +12,8 @@ phases:
     commands:
       - echo Logging into AWS...
       - cd aws-three-tier/environments/dev
+      - echo "Listing files in dev folder:"
+      - ls -la
       - echo Initializing Terraform...
       - terraform init
   build:
