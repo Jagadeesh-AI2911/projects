@@ -55,9 +55,9 @@ module "cicd" {
     source                  = "../../modules/cicd"
     environment             = var.environment
     app_name                = var.app_name
-    github_repo_owner       = "Jagadeesh-AI2911"
-    github_repo_name        = "aws-three-tier"
-    github_branch           = "main"
+    github_repo_owner       = var.github_repo_owner
+    github_repo_name        = var.github_repo_name
+    github_branch           = var.github_branch
     ecs_cluster_name        = module.backend.ecs_cluster_name
     ecs_service_name        = module.backend.ecs_service_name
     ecr_php_url             = module.backend.ecr_php_url
