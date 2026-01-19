@@ -54,7 +54,7 @@ resource "aws_codebuild_project" "docker_build" {
 
     source {
         type        = "CODEPIPELINE"
-        buildspec   = "aws-three-tier/buildspec.yml"
+        buildspec   = "php-app-repo/buildspec.yml"
     }
 }
 

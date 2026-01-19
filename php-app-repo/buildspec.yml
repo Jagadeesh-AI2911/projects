@@ -11,7 +11,7 @@ phases:
   build:
     commands:
       - echo Build started on 'date'
-      - cd aws-three-tier 
+      - cd php-app-repo 
       - echo Building PHP image...
       - docker build -t $ECR_REPO_URL_PHP:latest -f docker/php/Dockerfile .
       - docker tag $ECR_REPO_URL_PHP:latest $ECR_REPO_URL_PHP:$IMAGE_TAG
@@ -19,7 +19,7 @@ phases:
       - docker build -t $ECR_REPO_URL_NGINX:latest -f docker/nginx/Dockerfile .
       - docker tag $ECR_REPO_URL_NGINX:latest $ECR_REPO_URL_NGINX:$IMAGE_TAG
 
-  post_builds:
+  post_build:
     commands:
       - echo Build complete on 'date'
       - echo Pushing PHP image...
@@ -31,5 +31,5 @@ phases:
       - echo Writing image definitions file...
       - printf '[{"name":"php", "image_Uri":"%s"},{"name":"nginx","imageUri":"%s"}]' $ECR_REPO_URL_PHP:$IMAGE_TAG $ECR_REPO_URL_NGINX:$IMAGE_TAG > imagedefinitions.json
 
-artifacsts:
+artifacts:
     files: imagedefinitions.json
