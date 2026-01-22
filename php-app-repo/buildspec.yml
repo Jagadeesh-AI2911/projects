@@ -26,11 +26,11 @@ phases:
       - docker push $ECR_REPO_URL_PHP:latest
       - docker push $ECR_REPO_URL_PHP:latest
       - echo writing image definitions file... 
-      - cd php-app-repo 
       - printf '[{"name":"php","imageUri":"%s"},{"name":"nginx","imageUri":"%s"}]' $ECR_REPO_URL_PHP:latest $ECR_REPO_URL_NGINX:latest > imagedefinitions.json
-      - echo "Debug: Verifying file creation..."
+      
+      - echo "Debug: Verifying file in root..."
       - ls -l imagedefinitions.json
+
 artifacts:
-  files: 
+  files:
     - imagedefinitions.json
-  base-directory: php-app-repo
