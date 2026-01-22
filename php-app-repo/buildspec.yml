@@ -4,33 +4,38 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO_URL_PHP
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
-    
+
   build:
     commands:
-      - echo Build started on 'date'
-      - cd php-app-repo 
-      - echo Building PHP image...
+      - echo Build started on `date`
+      - echo Building the Docker images...
+      - cd php-app-repo
       - docker build -t $ECR_REPO_URL_PHP:latest -f docker/php/Dockerfile .
-      - docker tag $ECR_REPO_URL_PHP:latest $ECR_REPO_URL_PHP:$IMAGE_TAG
-      - echo Building Nginx image ECR...
       - docker build -t $ECR_REPO_URL_NGINX:latest -f docker/nginx/Dockerfile .
+      - docker tag $ECR_REPO_URL_PHP:latest $ECR_REPO_URL_PHP:$IMAGE_TAG
       - docker tag $ECR_REPO_URL_NGINX:latest $ECR_REPO_URL_NGINX:$IMAGE_TAG
 
   post_build:
     commands:
-      - echo Build complete on 'date'
-      - echo Pushing Docker images...
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
       - docker push $ECR_REPO_URL_PHP:latest
-      - docker push $ECR_REPO_URL_PHP:latest
-      - echo writing image definitions file... 
-      - printf '[{"name":"php","imageUri":"%s"},{"name":"nginx","imageUri":"%s"}]' $ECR_REPO_URL_PHP:latest $ECR_REPO_URL_NGINX:latest > imagedefinitions.json
+      - docker push $ECR_REPO_URL_PHP:$IMAGE_TAG
+      - docker push $ECR_REPO_URL_NGINX:latest
+      - docker push $ECR_REPO_URL_NGINX:$IMAGE_TAG
+      - echo "Creating imagedefinitions.json..."
+      - cd $CODEBUILD_SRC_DIR
+      - printf '[{"name":"php","imageUri":"%s"},{"name":"nginx","imageUri":"%s"}]' $ECR_REPO_URL_PHP:$IMAGE_TAG $ECR_REPO_URL_NGINX:$IMAGE_TAG > imagedefinitions.json
       
-      - echo "Debug: Verifying file in root..."
+      - echo "Debug: Verifying file existence..."
       - ls -l imagedefinitions.json
+      - cat imagedefinitions.json
 
 artifacts:
   files:
     - imagedefinitions.json
+  discard-paths: yes

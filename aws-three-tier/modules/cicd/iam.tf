@@ -84,8 +84,12 @@ resource "aws_iam_role_policy" "codebuild_policy" {
                     "autoscaling:*",      
                     "cloudwatch:*",       
                     "cloudfront:*",       
-                    "route53:*",          
-                    "codestar-connections:*", 
+                    "route53:*",      
+                    "codebuild:*",
+                    "codepipeline:*",    
+                    "codestar-connections:*",
+                    "logs:*",
+                    "s3:*"
                 ]
                 Resource = "*"
             },
