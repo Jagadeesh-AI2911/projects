@@ -22,14 +22,15 @@ phases:
   post_build:
     commands:
       - echo Build complete on 'date'
-      - echo Pushing PHP image...
+      - echo Pushing Docker images...
       - docker push $ECR_REPO_URL_PHP:latest
-      - docker push $ECR_REPO_URL_PHP:$IMAGE_TAG
-      - echo Pushing Nginx image...
-      - docker push $ECR_REPO_URL_NGINX:latest
-      - docker push $ECR_REPO_URL_NGINX:$IMAGE_TAG
-      - echo Writing image definitions file...
-      - printf '[{"name":"php", "image_Uri":"%s"},{"name":"nginx","imageUri":"%s"}]' $ECR_REPO_URL_PHP:$IMAGE_TAG $ECR_REPO_URL_NGINX:$IMAGE_TAG > imagedefinitions.json
-
+      - docker push $ECR_REPO_URL_PHP:latest
+      - echo writing image definitions file... 
+      - cd php-app-repo 
+      - printf '[{"name":"php","imageUri":"%s"},{"name":"nginx","imageUri":"%s"}]' $ECR_REPO_URL_PHP:latest $ECR_REPO_URL_NGINX:latest > imagedefinitions.json
+      - echo "Debug: Verifying file creation..."
+      - ls -l imagedefinitions.json
 artifacts:
-    files: imagedefinitions.json
+  files: 
+    - imagedefinitions.json
+  base-directory: php-app-repo

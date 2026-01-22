@@ -31,7 +31,8 @@ resource "aws_iam_role_policy" "codebuild_policy" {
                     "ecr:InitiateLayerUpload",
                     "ecr:UploadLayerPart",
                     "ecr:CompleteLayerUpload",
-                    "ecr:PutImage"
+                    "ecr:PutImage",
+                    "ecr:ListTagsForResource"
             ] 
             Resource = [
                 var.ecr_php_arn,
@@ -71,6 +72,22 @@ resource "aws_iam_role_policy" "codebuild_policy" {
                     "arn:aws:s3:::terraform-state-locking-jag",
                     "arn:aws:s3:::terraform-state-locking-jag/*",
                 ]
+            },
+            {
+                Effect = "Allow"
+                Action = [
+                    "ec2:*",
+                    "ecs:*",
+                    "iam:*",
+                    "rds:*",
+                    "elasticloadbalancing:*", 
+                    "autoscaling:*",      
+                    "cloudwatch:*",       
+                    "cloudfront:*",       
+                    "route53:*",          
+                    "codestar-connections:*", 
+                ]
+                Resource = "*"
             },
             {
                 Effect = "Allow"
@@ -165,9 +182,12 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
             {
                 Effect = "Allow"
                 Action = [
-                    "iam:PassRole"
+                    "iam:GetRole",
+                    "iam:PassRole" 
                 ]
-                Resource = "*"
+                Resource = [
+                    aws_iam_role.codebuild_role.arn
+                ]
             },
             {
                 Effect = "Allow"
