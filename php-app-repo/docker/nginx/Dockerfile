@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM public.ecr.aws/docker/library/nginx:alpine
 
 RUN rm /etc/nginx/conf.d/default.conf
 
