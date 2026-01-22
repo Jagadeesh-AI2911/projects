@@ -19,6 +19,6 @@ phases:
   build:
     commands:
       - echo Running Terraform Plan...
-      - terraform plan -out=tfplan
+      - terraform plan -var-file="terraform.tfvars" -out=tfplan
       - echo Running Terraform Apply...
       - terraform apply -auto-approve tfplan
