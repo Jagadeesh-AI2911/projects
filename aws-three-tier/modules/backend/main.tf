@@ -73,49 +73,68 @@ resource "aws_ecs_cluster" "main" {
 }
 
 resource "aws_ecs_task_definition" "app" {
-    family                  = "${var.app_name}-${var.environment}-task"
-    execution_role_arn      = aws_iam_role.ecs_execution_role.arn
-    task_role_arn           = aws_iam_role.ecs_task_role.arn
-    network_mode            = "awsvpc"
-    cpu                     = var.fargate_cpu
-    memory                  = var.fargate_memory
-    requires_compatibilities = ["FARGATE"]
-    container_definitions = jsonencode([
-        {
-            "name": "${var.app_name}-${var.environment}-nginx",
-            "image": "${aws_ecr_repository.nginx_repo.repository_url}:${var.app_image_tag}",
-            "essential": true
-            "portMappings": [{
-                "containerPort": 80
-            }],
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-group": aws_cloudwatch_log_group.logs.name
-                    "awslogs-region": "${var.aws_region}"
-                    "awslogs-stream-prefix": "nginx"
-                }
-            
-            }
-            depends_on      = [{
-                "containerName": "${var.app_name}-${var.environment}-php",
-                "condition": "START"
-            }]
-        },
-        {
-            name        = "php"
-            image       = "${aws_ecr_repository.app_repo.repository_url}:${var.app_image_tag}"
-            essential   = true
-            logConfiguration = {
-                logDriver   = "awslogs",
-                options     = {
-                    "awslogs-group": "${aws_cloudwatch_log_group.logs.name}",
-                    "awslogs-region": "${var.aws_region}",
-                    "awslogs-stream-prefix": "php"
-                }
-            }
+  family                   = "${var.app_name}-${var.environment}-task"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.fargate_cpu
+  memory                   = var.fargate_memory
+  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    # --- Container 1: PHP App ---
+    {
+      name      = "${var.app_name}-${var.environment}-php" 
+      image     = "${aws_ecr_repository.app_repo.repository_url}:latest"
+      essential = true
+      
+      # Environment variables for the app
+      environment = [
+        { name = "APP_ENV", value = var.environment }
+      ],
+      
+      # Logging
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.logs.name
+          "awslogs-region"        = var.aws_region
+          "awslogs-stream-prefix" = "php"
         }
-    ])
+      }
+    },
+
+    # --- Container 2: Nginx (Sidecar) ---
+    {
+      name      = "${var.app_name}-${var.environment}-nginx" 
+      image     = "${aws_ecr_repository.nginx_repo.repository_url}:latest"
+      essential = true
+      
+      # Nginx needs to talk to PHP on localhost:9000
+      portMappings = [
+        {
+          containerPort = 80
+          hostPort      = 80
+        }
+      ],
+      
+      dependsOn = [
+        {
+          containerName = "${var.app_name}-${var.environment}-php"
+          condition     = "START"
+        }
+      ],
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.logs.name
+          "awslogs-region"        = var.aws_region
+          "awslogs-stream-prefix" = "nginx"
+        }
+      }
+    }
+  ])
 }
 resource "aws_ecs_service" "main" {
     name            = "${var.app_name}-${var.environment}-service"
