@@ -167,15 +167,11 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
             {
                 Effect = "Allow"
                 Action = [
-                    "ecr:GetAuthorizationToken"
-                ]
-                Resource = "*"
-            },
-            {
-                Effect = "Allow"
-                Action = [
                     "ecs:*",
-                    "iam:PassRole"
+                    "iam:PassRole",
+                    "ecr:*",
+                    "kms:*",
+                    "codedeploy:*"
                 ]
                 Resource = "*"
             },
