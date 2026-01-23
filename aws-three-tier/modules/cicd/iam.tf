@@ -143,7 +143,8 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
                     "s3:GetObject",
                     "s3:GetObjectVersion",
                     "s3:GetBucketVersioning",
-                    "s3:PutObject"
+                    "s3:PutObject",
+                    "s3:PutObjectAcl"
                 ]
                 Resource = [
                     aws_s3_bucket.codepipeline_bucket.arn,
@@ -173,21 +174,15 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
             {
                 Effect = "Allow"
                 Action = [
-                    "ecs:DescribeServices",
-                    "ecs:DescribeTaskDefinition",
-                    "ecs:DescribeTasks",
-                    "ecs:ListTasks",
-                    "ecs:ListTaskDefinitions",
-                    "ecs:RegisterTaskDefinition",
-                    "ecs:UpdateService"
+                    "ecs:*",
+                    "iam:PassRole"
                 ]
                 Resource = "*"
             },
             {
                 Effect = "Allow"
                 Action = [
-                    "iam:GetRole",
-                    "iam:PassRole" 
+                    "iam:GetRole"
                 ]
                 Resource = [
                     aws_iam_role.codebuild_role.arn
