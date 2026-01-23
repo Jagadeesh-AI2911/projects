@@ -4,7 +4,7 @@ phases:
   pre_build:
     commands:
       - "echo Logging in to Amazon ECR..."
-      # FETCH THE ACCOUNT ID DYNAMICALLY ---
+      # FETCH THE ACCOUNT ID DYNAMICALLY
       - "AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)"
       - "aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
       
@@ -33,14 +33,20 @@ phases:
       - "docker push $ECR_REPO_URL_NGINX:latest"
       - "docker push $ECR_REPO_URL_NGINX:$IMAGE_TAG"
       
-      - "echo Creating imagedefinitions.json..."
+      - "echo Creating image definitions..."
       - "cd $CODEBUILD_SRC_DIR"
-      - "printf '[{\"name\":\"php\",\"imageUri\":\"%s\"},{\"name\":\"nginx\",\"imageUri\":\"%s\"}]' $ECR_REPO_URL_PHP:$IMAGE_TAG $ECR_REPO_URL_NGINX:$IMAGE_TAG > imagedefinitions.json"    
-      - "echo Debug: Verifying file..."
-      - "ls -l imagedefinitions.json"
-      - "cat imagedefinitions.json"
+      
+      # 1. Create the STANDARD file (Plural)
+      - "printf '[{\"name\":\"php\",\"imageUri\":\"%s\"},{\"name\":\"nginx\",\"imageUri\":\"%s\"}]' $ECR_REPO_URL_PHP:$IMAGE_TAG $ECR_REPO_URL_NGINX:$IMAGE_TAG > imagedefinitions.json"
+      
+      # 2. COPY it to the SINGULAR name (matches your error message)
+      - "cp imagedefinitions.json imagedefinition.json"
+      
+      - "echo Debug: Verifying files..."
+      - "ls -l imagedefinition*"
 
 artifacts:
   files:
-    - imagedefinitions.json
+    # This wildcard captures BOTH names so the pipeline is happy either way
+    - imagedefinition*.json
   discard-paths: yes
