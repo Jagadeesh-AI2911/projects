@@ -37,7 +37,7 @@ phases:
       - "cd $CODEBUILD_SRC_DIR"
       
       # 1. Create the STANDARD file (Plural)
-      - "printf '[{\"name\":\"php\",\"imageUri\":\"%s\"},{\"name\":\"nginx\",\"imageUri\":\"%s\"}]' $ECR_REPO_URL_PHP:$IMAGE_TAG $ECR_REPO_URL_NGINX:$IMAGE_TAG > imagedefinitions.json"
+      - "printf '[{\"name\":\"myphpapp-dev-php\",\"imageUri\":\"%s\"},{\"name\":\"myphpapp-dev-nginx\",\"imageUri\":\"%s\"}]' $ECR_REPO_URL_PHP:$IMAGE_TAG $ECR_REPO_URL_NGINX:$IMAGE_TAG > imagedefinitions.json"
       
       # 2. COPY it to the SINGULAR name (matches your error message)
       - "cp imagedefinitions.json imagedefinition.json"
